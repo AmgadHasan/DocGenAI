@@ -56,5 +56,5 @@ with block:
     submit.click(chatgpt_clone, inputs=[text_input_box, state], outputs=[chat_box, state])
 
 # For user Authentication
-#block.launch(debug = True, auth=("admin", "pass1234"))
+block.launch(server_name="0.0.0.0", server_port=8000)
 
