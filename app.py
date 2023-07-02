@@ -43,7 +43,7 @@ def chatgpt_clone(input, history):
     return history, history
 
 
-block = gr.Blocks(title='DocGen.AI', css='footer {visibility: hidden}', logo='/home/amgad/LogoSample_ByTailorBrands.jpg')
+block = gr.Blocks(title='DocGen.AI', css='footer {visibility: hidden}')
 
 
 with block:
