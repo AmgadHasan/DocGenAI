@@ -13,16 +13,5 @@ An assistant to help you build your dream app and generate SRS documents!
 ```
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/your_credentials_file.json
 ```
-4. In your code, get the credentials and project id:
-```
-import google.auth
-
-credentials, project_id = google.auth.default()
-```
-5. Initialize vertexai:
-```
-import vertexai
-vertexai.init(project_id=project_id, credentials=credentials)
-```
 
 ## Python version: 3.10.6
