@@ -23,15 +23,8 @@ def docgenai_chat(input: str, history: List[Tuple[str, str]]) -> Tuple[List[Tupl
 
 
 
-def clear_state():
-
-<<<<<<< HEAD
-     
+def clear_state():      
       chatbot.conversation_chain.memory.clear()
-      
-=======
-      chatbot.conversation_chain.memory.clear()
->>>>>>> 2c2a1f78d432332af411559631103200e205a341
       history=[]
       return history
 
@@ -42,11 +35,9 @@ with block:
     gr.Markdown("""<h1><center>DocGen.AI - Create SRS documents for your apps by chatting with an AI assistant</center></h1>
     """)
     chat_box = gr.Chatbot()
-<<<<<<< HEAD
+
     with gr.Row():
-=======
  with gr.Row():
->>>>>>> 2c2a1f78d432332af411559631103200e205a341
        with gr.Column(scale=0.85):
           text_input_box = gr.Textbox(placeholder=input_placeholder)
           state = gr.State()
