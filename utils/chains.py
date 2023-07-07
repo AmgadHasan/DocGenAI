@@ -28,6 +28,7 @@ class ChainBuilder:
         self.prompt_information = prompt_information
         self.condition = condition
         self.verbose = verbose
+        self.raw_text = None
         self.parsed_text = parsed_text
         self.chain = self.build_chain()
 
@@ -105,6 +106,7 @@ class ChainBuilder:
         # check if the condition is true or not
         output = self.predict(input_text)
         if self.check_condition(output):
+            self.raw_text = output
             # parse the output
             self.parsed_text = self.parse_output(output)
             # return the output

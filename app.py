@@ -27,7 +27,5 @@ with block:
     submit = gr.Button("SEND")
     submit.click(docgenai_chat, inputs=[text_input_box, state], outputs=[chat_box, state])
 
-
-# For user Authentication
-block.launch(server_name="0.0.0.0", server_port=8000)
+block.launch()
 

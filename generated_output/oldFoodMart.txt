@@ -1,0 +1,8 @@
+## 1. Introduction
+
+- Purpose: FoodMart is a mobile app that connects users with local restaurants and kitchens.
+- Scope: The app allows users to view items, place orders, give ratings, and leave written reviews.
+- Intended Audience: The target audience for the app is female adults.
+## 2. Overall Description
+
+- Product perspective: The product perspective of the app is to provide a platform for users to connect with local restaurants and kitchens. The app will allow users to view items, place orders, give ratings, and leave written reviews. The app will also provide users with information about the restaurants and kitchens, such as their location, hours of operation, and menu items.

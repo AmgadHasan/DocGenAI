@@ -165,3 +165,7 @@ docgen.ipynb
 # GCP credentials file
 google-api-credentials.json
 
+# Presentation files
+Technical details.md
+Presentation Flow.md
+
