@@ -12,6 +12,7 @@ def get_chat_text_models(platform):
     vertexai.init(project=project_id, credentials=credentials)
     chat_model = ChatVertexAI(model_name='chat-bison', max_output_tokens=128)
     text_model = VertexAI(model_name='text-bison', max_output_tokens=1024)
+    print("text_model", text_model)
     return chat_model, text_model
 
     
