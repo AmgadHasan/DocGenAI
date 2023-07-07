@@ -40,7 +40,7 @@ with block:
     chat_box = gr.Chatbot()
     with gr.Row():
        with gr.Column(scale=0.85):
-          text_input_box = gr.Textbox(placeholder=prompt)
+          text_input_box = gr.Textbox(placeholder=input_placeholder)
           state = gr.State()
 
        with gr.Column(scale=0.15):
