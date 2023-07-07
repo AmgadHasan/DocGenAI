@@ -2,7 +2,80 @@ import utils.chains as chains	# has get_conversation_chain, get_srs_chain
 import utils.api as api	# To authenticate and get models from API
 from utils.templates import ROUTE_TEMPLATE
 
+class ChainLinker :
+	
+    def __init__(self, platform='VertexAI'):
+    	self.platform = platform
+    	chat_model, text_model = api.get_chat_text_models(platform=self.platform) # chat_model unused
+    	self.chains = [chains.get_introduction_chain(text_model), chains.get_overall_description_chain(text_model)]
+    	#print("temp_chains:",temp_chains)
+    	self.current_chain_index = 0
+        
 
+    def __repr__(self):
+      return f"""ChainLinker(chains={self.chains})"""
+
+    def __str__(self):
+      return self.__repr__()
+
+    def initialize_chain(self, chain):
+      if self.current_chain_index == 1:
+       	output = chain.chain_run("Ask me a questions about the description of the app.")
+      
+      return output
+
+    def generate(self, input_text):
+      #print("chains:", self.chains)
+      current_chain = self.chains[self.current_chain_index]
+      output = current_chain.chain_run(input_text)
+      print("output",output)
+      
+
+      if current_chain.condition:
+        print('chain.condition')
+        self.current_chain_index += 1
+        if self.current_chain_index == len(self.chains):            
+          return "Finished"
+        current_chain = self.chains[self.current_chain_index]
+        print("In chain:", current_chain.section_name)
+        output = self.initialize_chain(current_chain)
+        print('init', output)
+        return output
+      	  
+        
+        
+            
+      if current_chain.use_custom_prompt:
+        print('current_chain.use_custom_prompt')
+        parsed_texts = [chain.parsed_text for chain in self.chains[:self.current_chain_index]]
+        current_chain.format_custom_prompt(parsed_texts)
+        current_chain.use_custom_prompt = False
+
+        
+      return output
+
+DocGenAI = ChainLinker
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#####################################################################################################
 class TokenizersChatbot():
   def __init__(self, platform='VertexAI'):
     self.platform = platform
