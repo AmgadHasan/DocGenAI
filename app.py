@@ -24,7 +24,7 @@ def docgenai_chat(input: str, history: List[Tuple[str, str]]) -> Tuple[List[Tupl
 
 
 def clear_state():      
-      chatbot.conversation_chain.memory.clear()
+      chatbot.reset_state()
       history=[]
       return history
 

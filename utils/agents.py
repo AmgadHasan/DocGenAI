@@ -53,7 +53,9 @@ class ChainLinker :
 
         
       return output
-
+    def reset_state(self):
+        for chain in self.chains:
+            chain.memory.clear()
 DocGenAI = ChainLinker
 
 
