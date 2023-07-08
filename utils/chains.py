@@ -6,6 +6,7 @@ Functions:
 - get_srs_chain(instruct_model): Returns an LLMChain object for generating an SRS document based on the app details.
 
 """
+import logging
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from langchain.chains import ConversationChain, LLMChain
@@ -112,8 +113,10 @@ class ChainBuilder:
             logging.info(output)
             try:
                 self.parsed_text = self.parse_output(output)
-            Except:
+            except:
                 logging.info("Failed to parse output in chain:", self.section_name)
+                logging.info("Chain output:", self.raw_text)
+                return None
 
             # return the output
         return output
