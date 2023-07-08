@@ -25,6 +25,7 @@ def docgenai_chat(input: str, history: List[Tuple[str, str]]) -> Tuple[List[Tupl
 
 def clear_state():      
       chatbot.reset_state()
+      chatbot.current_chain_index = 0
       history=[]
       return history
 
