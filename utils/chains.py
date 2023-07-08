@@ -10,9 +10,9 @@ from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from langchain.chains import ConversationChain, LLMChain
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
-from utils.objects import Introduction, OverAllDescription
+from utils.objects import Introduction, OverAllDescription, SystemFeatures, FunctionalRequirements
 from utils.templates import get_conversation_prompt, get_srs_prompt
-from utils.templates import get_intro_prompt, get_ovd_prompt
+from utils.templates import get_introduction_prompt, get_overall_description_prompt, get_system_features_prompt, get_functional_requirements_prompt
 
 
 class ChainBuilder:
@@ -108,7 +108,13 @@ class ChainBuilder:
         if self.check_condition(output):
             self.raw_text = output
             # parse the output
-            self.parsed_text = self.parse_output(output)
+            # Hack to debug parsing error; remember to remove after fix
+            logging.info(output)
+            try:
+                self.parsed_text = self.parse_output(output)
+            Except:
+                logging.info("Failed to parse output in chain:", self.section_name)
+
             # return the output
         return output
 
@@ -116,8 +122,8 @@ def get_introduction_chain(chat_model):
     introduction_chain = ChainBuilder(
     	section_name='introduction',
       	llm=chat_model,
-      	memory=ConversationBufferWindowMemory(),
-      	prompt=get_intro_prompt(),
+      	memory=ConversationBufferMemory(),
+      	prompt=get_introduction_prompt(),
       	use_custom_prompt=False,
       	condition_text="""## 1. Introduction""",
       	output_parser=PydanticOutputParser(pydantic_object=Introduction),
@@ -127,18 +133,47 @@ def get_introduction_chain(chat_model):
     return introduction_chain
 
 def get_overall_description_chain(chat_model):
-  overall_description_chain = ChainBuilder(
-      section_name='overall description',
+    overall_description_chain = ChainBuilder(
+        section_name='overall description',
+        llm=chat_model,
+        memory=ConversationBufferMemory(),
+        prompt=get_overall_description_prompt(),
+        use_custom_prompt=True,
+        condition_text="## 2. Overall Description",
+        output_parser=PydanticOutputParser(pydantic_object=OverAllDescription),
+        prompt_information=None,
+        verbose=True,)
+  
+    return overall_description_chain
+
+def get_system_features_chain(chat_model):
+  system_features_chain = ChainBuilder(
+      section_name='system features',
+      llm=chat_model,
+      memory=ConversationBufferMemory(),
+      prompt=get_system_features_prompt(),
+      use_custom_prompt=True,
+      condition_text="## 3. System Features",
+      output_parser=PydanticOutputParser(pydantic_object=SystemFeatures),
+      prompt_information=None,
+      verbose=True,)
+  
+  return system_features_chain
+
+def get_functional_requirements_chain(chat_model):
+  # IMPORTANT: Use ConversationBufferWindowMemory to summarize the history as it's too long!
+  functional_requirements_chain = ChainBuilder(
+      section_name='functional requirements',
       llm=chat_model,
       memory=ConversationBufferWindowMemory(),
-      prompt=get_ovd_prompt(),
+      prompt=get_functional_requirements_prompt(),
       use_custom_prompt=True,
-      condition_text="## 2. Overall Description",
-      output_parser=PydanticOutputParser(pydantic_object=OverAllDescription),
+      condition_text="## 4. Functional Requirements",
+      output_parser=PydanticOutputParser(pydantic_object=FunctionalRequirements),
       prompt_information=None,
-      verbose=False,)
+      verbose=True,)
   
-  return overall_description_chain
+  return functional_requirements_chain
 
 ######################################################################################################################################
 def get_conversation_chain(chat_model):

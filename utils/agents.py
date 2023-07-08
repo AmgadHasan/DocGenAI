@@ -3,7 +3,9 @@ import utils.chains as chains	# has get_conversation_chain, get_srs_chain
 import utils.api as api	# To authenticate and get models from API
 from utils.templates import ROUTE_TEMPLATE
 import os
+
 OUTPUT_DIR = 'generated_output'
+
 class DocGenAI :
     def __init__(self, platform='VertexAI'):
         self.platform = platform
@@ -11,14 +13,18 @@ class DocGenAI :
         self.active_chain_index = 0
         
     def __repr__(self):
-        return f"""ChainLinker(chains={self.chains})"""
+        return f"""DocGenAI(chains={self.chains})"""
 
     def __str__(self):
         return self.__repr__()
 
     def initialize_chain(self, chain):
         if self.active_chain_index == 1:
-            output = chain.chain_run("Ask me a questions about the description of the app.")
+          output = chain.chain_run("Now ask me questions to gather information regarding the overall description")
+        if self.active_chain_index == 2:
+          output = chain.chain_run("Now ask me questions to gather information regarding system features")
+        if self.active_chain_index == 3:
+          output = chain.chain_run("Now ask me questions to gather information regarding functional requiremets")
         
         return output
 
@@ -37,39 +43,58 @@ class DocGenAI :
         # Need to modify routing logic to use this
         #loaded_chains = {'introduction_chain': chains.get_introduction_chain(models['text_model']),
         #            'overall_description_chain': chains.get_overall_description_chain(models['text_model'])}
-        loaded_chains = [chains.get_introduction_chain(models['text_model']), chains.get_overall_description_chain(models['text_model'])]
+        loaded_chains = [chains.get_introduction_chain(models['text_model']),
+                         chains.get_overall_description_chain(models['text_model']),
+                         chains.get_system_features_chain(models['text_model']),
+                         chains.get_functional_requirements_chain(models['text_model'])]
+        
         return loaded_chains
 
     def generate(self, input_text):
+        logging.info("INPUT TEXT:", input_text)
         #logging.debug("chains:", self.chains)
         active_chain = self.chains[self.active_chain_index]
         output = active_chain.chain_run(input_text)
         logging.debug("output", output)
+        logging.info("active chain:", active_chain.section_name) 
         
         if active_chain.condition:
-            logging.debug('chain.condition')
+            logging.info(f"chain.condition satisfied")
+            logging.info(active_chain.parsed_text)
             self.active_chain_index += 1
             if self.active_chain_index == len(self.chains):
                 app_name = self.chains[0].parsed_text.app_name
                 with open(f"{OUTPUT_DIR}/{app_name}.txt", "w") as file:
                     # Write output of chain 0 and then new line and then chain 1 to the file
-                    file.write(self.chains[0].raw_text + "\n" + self.chains[1].raw_text)
+                    file.write(self.chains[0].raw_text + "\n" + self.chains[1].raw_text00)
                 return "Finished"
-            
+
             active_chain = self.chains[self.active_chain_index]
-            logging.debug("In chain:", active_chain.section_name)
+            logging.debug("In chain:", str(active_chain.section_name))
+            if active_chain.use_custom_prompt:
+                logging.debug('active_chain.use_custom_prompt')
+                parsed_texts = [chain.parsed_text for chain in self.chains[:self.active_chain_index]]
+                active_chain.format_custom_prompt(parsed_texts)
+                active_chain.use_custom_prompt = False
+                logging.info("enterdr use custom")
+            else:
+                logging.info("Didn't enter use custom")
+            
             output = self.initialize_chain(active_chain)
             logging.debug('init', output)
             
             return output
       	              
-        if active_chain.use_custom_prompt:
-            logging.debug('active_chain.use_custom_prompt')
-            parsed_texts = [chain.parsed_text for chain in self.chains[:self.active_chain_index]]
-            active_chain.format_custom_prompt(parsed_texts)
-            active_chain.use_custom_prompt = False
+        
 
         return output
+
+    def reset_state(self):
+        # reset index
+        self.active_chain_index = 0
+        # Clear memory for all sub chains
+        for chain in self.chains:
+            chain.memory.clear()
 
 
 class TokenizersChatbot():
